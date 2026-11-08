@@ -10,6 +10,9 @@ When you drop a statement on wdmmg.app, your browser reads the PDF or CSV and ru
 
 ## What it removes
 
+Redact, mask, hide, anonymise: whatever you call it, these details are taken out before anything else reads the statement.
+
+
 | Removed | Example before | After |
 |---|---|---|
 | The statement header: your name, address, ZIP or PIN code, customer details (everything above the first payment, except the title, period and totals) | `JOHN DOE` / `123 Main Street, Apt 4B` / `Austin, TX 78701` | line dropped, also when it repeats on later pages |
