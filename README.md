@@ -93,7 +93,7 @@ You can watch what leaves your browser:
 
 ## This is the code the site runs
 
-The live site's cleaning code is checked against this repository on every change, so the two can't drift apart. Only the import paths differ.
+wdmmg.app doesn't keep its own copy. The site includes this repository directly (as a git submodule pinned to one commit on `main`) and runs it unchanged. A check on the site's side fails if it ever points at a commit that isn't public here. So any change to how your details are redacted has to be published here first.
 
 ## License
 
