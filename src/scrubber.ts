@@ -20,6 +20,35 @@ const PII_PATTERNS = [
   // Aadhaar (1234 5678 9012) and US Social Security numbers (123-45-6789). Never followed by an amount.
   { regex: /(?<!\d[ -])\b\d{4} \d{4} \d{4}\b(?![.,]\d| \d)/g, replacement: '[REDACTED_ID]' },
   { regex: /(?<!\d[ -])\b\d{3}-\d{2}-\d{4}\b(?![.,\-]\d)/g, replacement: '[REDACTED_ID]' },
+  // Bank account numbers in IBAN form (Europe, the Middle East, much of the world): DE89 3704 0044 0532 0130 00.
+  { regex: /\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,3})?\b(?![.,]\d)/g, replacement: '[REDACTED_ACCOUNT]' },
+  // Tax and national ID numbers in fixed formats, from many countries. Only formats that can't be mistaken
+  // for an amount, a date or a shop name are listed here; other IDs are caught by the label rule below or by
+  // the long-number rule (9 to 18 digits: Germany, Japan, South Africa, Indonesia, Saudi Arabia and others).
+  { regex: /\b\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]\b/g, replacement: '[REDACTED_ID]' }, // India GSTIN
+  { regex: /(?<![\d-])\b\d{2}-\d{7}\b(?![.,\-]\d)/g, replacement: '[REDACTED_ID]' }, // US EIN
+  { regex: /\b[A-CEGHJ-PR-TW-Z]{2} ?\d{2} ?\d{2} ?\d{2} ?[A-D]\b/g, replacement: '[REDACTED_ID]' }, // UK National Insurance
+  { regex: /(?<![\d-])\b\d{3}-\d{3}-\d{3}\b(?![.,\-]\d)/g, replacement: '[REDACTED_ID]' }, // Canada SIN (spaced ones are caught by their label)
+  { regex: /(?<![\d-])\b\d{2,3}-\d{3}-\d{3}\b(?![.,\-]\d)/g, replacement: '[REDACTED_ID]' }, // New Zealand IRD
+  { regex: /\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, replacement: '[REDACTED_ID]' }, // Brazil CPF
+  { regex: /\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, replacement: '[REDACTED_ID]' }, // Brazil CNPJ
+  { regex: /\b[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d\b/g, replacement: '[REDACTED_ID]' }, // Mexico CURP
+  { regex: /\b[A-Z&Ñ]{3,4}\d{6}[A-Z0-9]{3}\b/g, replacement: '[REDACTED_ID]' }, // Mexico RFC
+  { regex: /\b\d{8}-?[A-HJ-NP-TV-Z]\b/g, replacement: '[REDACTED_ID]' }, // Spain DNI / NIF
+  { regex: /\b[XYZ]-?\d{7}-?[A-Z]\b/g, replacement: '[REDACTED_ID]' }, // Spain NIE
+  { regex: /\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/g, replacement: '[REDACTED_ID]' }, // Italy codice fiscale
+  { regex: /\b[12] ?\d{2} ?\d{2} ?\d{2} ?\d{3} ?\d{3} ?\d{2}\b(?![.,]\d)/g, replacement: '[REDACTED_ID]' }, // France NIR
+  { regex: /\b[STFGM]\d{7}[A-Z]\b/g, replacement: '[REDACTED_ID]' }, // Singapore NRIC / FIN
+  { regex: /\b[A-Z]{1,2}\d{6}\([0-9A]\)/g, replacement: '[REDACTED_ID]' }, // Hong Kong ID
+  { regex: /\b\d{17}[\dXx]\b/g, replacement: '[REDACTED_ID]' }, // China resident ID
+  { regex: /\b\d{6}-\d{7}\b/g, replacement: '[REDACTED_ID]' }, // South Korea RRN
+  { regex: /\b784-?\d{4}-?\d{7}-?\d\b/g, replacement: '[REDACTED_ID]' }, // UAE Emirates ID
+  { regex: /\b\d{7}[A-W][A-IW]?\b/g, replacement: '[REDACTED_ID]' }, // Ireland PPS
+  // Any value written after an ID label, whatever the country or format.
+  {
+    regex: /\b(?:TIN|tax\s*(?:id|no|number|file\s*(?:no|number))|taxpayer\s*id|EIN|ITIN|GSTIN|VAT\s*(?:id|no|number|reg)|TFN|ABN|IRD|NRIC|FIN|CPF|CNPJ|CURP|RFC|DNI|NIE|NIF|PPSN?|PESEL|BSN|SSN|SIN|NINO|NI\s*(?:no|number)|national\s*insurance(?:\s*(?:no|number))?|social\s*(?:security|insurance)(?:\s*(?:no|number))?|medicare(?:\s*(?:no|number))?|passport(?:\s*(?:no|number))?|driver'?s?\s*licen[cs]e(?:\s*(?:no|number))?|DL\s*no|voter\s*id|national\s*id|ID\s*(?:card|no|number)|IBAN|BIC|SWIFT(?:\s*code)?|routing(?:\s*(?:no|number))?|ABA|BSB|sort\s*code)\.?\s*(?:no\.?|number)?\s*[:#]\s*[A-Za-z0-9][A-Za-z0-9\-/]{1,34}(?: (?![\d,]*[.,]\d{2}\b)[A-Za-z0-9][A-Za-z0-9\-/]{0,34}){0,3}/gi,
+    replacement: '[REDACTED_ID]',
+  },
   // A date of birth, when it is labelled as one.
   { regex: /\b(?:date\s*of\s*birth|d\.?o\.?b\.?)\s*[:\-]?\s*\d{1,4}[/.\- ]\w{1,9}[/.\- ]\d{2,4}/gi, replacement: '[REDACTED_DOB]' },
   // Card numbers: four groups with the SAME separator (none, space or hyphen), never running into an

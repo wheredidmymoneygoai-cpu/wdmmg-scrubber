@@ -2,7 +2,7 @@
 
 **Your money is your business. Your financial details should be too.**
 
-Free, open-source code that cleans your financial statement **on your device**, before any app or AI reads it. It is the same code [Where Did My Money Go?](https://wdmmg.app) runs before it reads yours.
+Free, open-source redaction code that cleans your financial statement **on your device**, before any app or AI reads it. It is the same code [Where Did My Money Go?](https://wdmmg.app) runs before it reads yours.
 
 It works on any financial statement you can export as a PDF or CSV: bank accounts, credit and debit cards, prepaid and forex cards, and payment apps like Venmo, Cash App, PayPal, Google Pay and PhonePe.
 
@@ -16,8 +16,10 @@ When you drop a statement on wdmmg.app, your browser reads the PDF or CSV and ru
 | Your own name anywhere else (read from the header, plus any name you type in) | `TRANSFER TO JOHN DOE SAVINGS` | `TRANSFER TO [REDACTED_NAME] SAVINGS` |
 | The account holder in ACH lines | `INDN:JOHN DOE CO ID:1234567890` | `INDN:[REDACTED_NAME] CO ID:[REDACTED_NUM]` |
 | Card numbers (16-digit and Amex) | `CARD 4111 1111 1111 1111` | `CARD [REDACTED_CARD]` |
-| Account numbers and other long numbers (9 to 18 digits) | `000123456789` | `[REDACTED_NUM]` |
-| Social Security numbers (and India's Aadhaar) | `123-45-6789` | `[REDACTED_ID]` |
+| Account numbers and other long numbers, 9 to 18 digits (this also covers many national IDs: Germany, Japan, South Africa, Indonesia, Saudi Arabia and others) | `000123456789` | `[REDACTED_NUM]` |
+| Tax and national ID numbers from many countries: US SSN, ITIN and EIN, UK National Insurance, Canada SIN, Australia TFN, New Zealand IRD, India Aadhaar, PAN and GSTIN, Brazil CPF and CNPJ, Mexico CURP and RFC, Spain DNI and NIE, Italy codice fiscale, France NIR, Ireland PPS, Singapore NRIC, Hong Kong ID, China resident ID, South Korea RRN, UAE Emirates ID | `123-45-6789`, `AB 12 34 56 C`, `123.456.789-09` | `[REDACTED_ID]` |
+| Any value written after an ID label, whatever the country: TIN, tax ID, tax file no, VAT no, passport no, driver's licence, national ID, SWIFT/BIC, routing, BSB, sort code | `Passport No: K1234567` | `[REDACTED_ID]` |
+| Bank account numbers in IBAN form | `DE89 3704 0044 0532 0130 00` | `[REDACTED_ACCOUNT]` |
 | A labelled date of birth | `DOB: 03/14/1996` | `[REDACTED_DOB]` |
 | Phone numbers | `512-555-0147` | `[REDACTED_PHONE]` |
 | Email addresses | `john.doe@gmail.com` | `[REDACTED_VPA_OR_EMAIL]` |
@@ -82,7 +84,7 @@ You can watch what leaves your browser:
 
 ## Honest limits
 
-- **These are rules, not magic.** Statements come in thousands of layouts. A detail written in an unusual way can slip through. If you find one, please open an issue (with made-up data).
+- **These are rules, not magic.** They are written to work for statements from anywhere in the world, but statements come in thousands of layouts. A detail written in an unusual way can slip through. If you find one, please open an issue (with made-up data).
 - **On your device, where possible.** If your browser can't read a PDF (an old browser, an unusual PDF), the site sends small files to our server instead and runs this same code there. The file is cleaned in memory and never stored. Large files are never sent: you get an error instead.
 - **What we do next with the cleaned text:** it goes to Google Gemini (paid API, not used for training) to sort the payments into groups. Our own code does every sum. Reports delete themselves after 48 hours. Details: [Privacy Policy](https://wdmmg.app/privacy).
 

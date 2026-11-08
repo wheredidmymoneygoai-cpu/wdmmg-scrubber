@@ -1,7 +1,8 @@
 {
   "name": "wdmmg-scrubber",
   "version": "1.0.0",
-  "description": "Cleans a financial statement (bank, card or payment app) on your device before any app or AI reads it.",
+  "keywords": ["redaction", "pii-redaction", "redactor", "scrubber", "privacy", "bank-statement", "financial-statement"],
+  "description": "Redacts a financial statement (bank, card or payment app) on your device before any app or AI reads it.",
   "license": "MIT",
   "private": true,
   "type": "module",
