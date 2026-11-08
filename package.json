@@ -1,7 +1,7 @@
 {
   "name": "wdmmg-scrubber",
   "version": "1.0.0",
-  "description": "The code that cleans a financial statement (bank, card or payment app) on your device before wdmmg.app reads it.",
+  "description": "Cleans a financial statement (bank, card or payment app) on your device before any app or AI reads it.",
   "license": "MIT",
   "private": true,
   "type": "module",
