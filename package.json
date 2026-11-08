@@ -1,0 +1,15 @@
+{
+  "name": "wdmmg-scrubber",
+  "version": "1.0.0",
+  "description": "The code that cleans a bank statement on your device before wdmmg.app reads it.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "tsx --test tests/*.test.ts",
+    "example": "tsx example.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
