@@ -1,8 +1,10 @@
 # wdmmg-scrubber
 
-**Your money is your business. Your bank details should be too.**
+**Your money is your business. Your financial details should be too.**
 
-The code that cleans your bank statement **on your device**, before [Where Did My Money Go?](https://wdmmg.app) reads it.
+The code that cleans your financial statement **on your device**, before [Where Did My Money Go?](https://wdmmg.app) reads it.
+
+It works on any money statement you can export as a PDF or CSV: bank accounts, credit and debit cards, prepaid and forex cards, and payment apps like Venmo, Cash App, PayPal, Google Pay and PhonePe.
 
 When you drop a statement on wdmmg.app, your browser reads the PDF or CSV and runs this code on it. Only the cleaned text is sent to us. This repository is that cleaning step, published so you don't have to take our word for it.
 
@@ -55,7 +57,7 @@ Statement Period 10/01/2026 to 10/31/2026
 
 ## Use it in your own project
 
-It's MIT licensed: use it anywhere, including commercial projects and other AI tools. A good use is cleaning a statement before you paste it into any chatbot.
+It's MIT licensed: use it anywhere, including commercial projects and other AI tools. A good use is cleaning any statement before you paste it into a chatbot.
 
 ```ts
 import { scrubStatementText } from './src/scrubber';
