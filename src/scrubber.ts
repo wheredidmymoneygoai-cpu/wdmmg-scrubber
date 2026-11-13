@@ -49,6 +49,13 @@ const PII_PATTERNS = [
     regex: /\b(?:TIN|tax\s*(?:id|no|number|file\s*(?:no|number))|taxpayer\s*id|EIN|ITIN|GSTIN|VAT\s*(?:id|no|number|reg)|TFN|ABN|IRD|NRIC|FIN|CPF|CNPJ|CURP|RFC|DNI|NIE|NIF|PPSN?|PESEL|BSN|SSN|SIN|NINO|NI\s*(?:no|number)|national\s*insurance(?:\s*(?:no|number))?|social\s*(?:security|insurance)(?:\s*(?:no|number))?|medicare(?:\s*(?:no|number))?|passport(?:\s*(?:no|number))?|driver'?s?\s*licen[cs]e(?:\s*(?:no|number))?|DL\s*no|voter\s*id|national\s*id|ID\s*(?:card|no|number)|IBAN|BIC|SWIFT(?:\s*code)?|routing(?:\s*(?:no|number))?|ABA|BSB|sort\s*code)\.?\s*(?:no\.?|number)?\s*[:#]\s*[A-Za-z0-9][A-Za-z0-9\-/]{1,34}(?: (?![\d,]*[.,]\d{2}\b)[A-Za-z0-9][A-Za-z0-9\-/]{0,34}){0,3}/gi,
     replacement: '[REDACTED_ID]',
   },
+  // An account or card number written after its label, in any format: "acct 12345678", "Account Number
+  // ACC-4421-0098", "acct# XXXX9921". The value must hold a digit, be at least five characters (so a
+  // card's last four stays, as it identifies no one) and never be an amount ("Account 12.50 adjustment").
+  {
+    regex: /\b(?:acct|a\/c|account(?:\s*holder)?|card)\.?\s*(?:no\.?|number|num|#|id)\s*[:#\-]?\s*(?=[A-Za-z0-9\-]*\d)(?![\d,]*[.,]\d{1,2}\b)[A-Za-z0-9][A-Za-z0-9\-]{4,34}\b|\b(?:acct|a\/c|account)\.?\s*[:#\-]?\s*(?=[A-Za-z0-9\-]*\d)(?![\d,]*[.,]\d{1,2}\b)[A-Za-z0-9][A-Za-z0-9\-]{4,34}\b/gi,
+    replacement: '[REDACTED_ACCOUNT]',
+  },
   // A date of birth, when it is labelled as one.
   { regex: /\b(?:date\s*of\s*birth|d\.?o\.?b\.?)\s*[:\-]?\s*\d{1,4}[/.\- ]\w{1,9}[/.\- ]\d{2,4}/gi, replacement: '[REDACTED_DOB]' },
   // Card numbers: four groups with the SAME separator (none, space or hyphen), never running into an
