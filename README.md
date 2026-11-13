@@ -2,11 +2,11 @@
 
 **Your money is your business. Your financial details should be too.**
 
-Free, open-source redaction code that cleans your financial statement **on your device**, before any app or AI reads it. It is the same code [Where Did My Money Go?](https://wdmmg.app) runs before it reads yours.
+Free, open-source redaction code that cleans your financial statement **on your device** (in most browsers), before any app or AI reads it. It works by pattern matching, so it is good, not perfect: see [Honest limits](#honest-limits). It is the same code [Where Did My Money Go?](https://wdmmg.app) runs before it reads yours.
 
 It works on any financial statement you can export as a PDF or CSV: bank accounts, credit and debit cards, prepaid and forex cards, and payment apps like Venmo, Cash App, PayPal, Google Pay and PhonePe.
 
-When you drop a statement on wdmmg.app, your browser reads the PDF or CSV and runs this code on it. Only the cleaned text is sent to us. This repository is that cleaning step, published so you don't have to take our word for it.
+When you drop a statement on wdmmg.app, your browser (in most browsers) reads the PDF or CSV and runs this code on it. Only the cleaned text is sent to us, and you can read or download it before anything is analysed. This repository is that cleaning step, published so you don't have to take our word for it.
 
 ## What it removes
 
@@ -23,6 +23,7 @@ Redact, mask, hide, anonymise: whatever you call it, these details are taken out
 | Tax and national ID numbers from many countries: US SSN, ITIN and EIN, UK National Insurance, Canada SIN, Australia TFN, New Zealand IRD, India Aadhaar, PAN and GSTIN, Brazil CPF and CNPJ, Mexico CURP and RFC, Spain DNI and NIE, Italy codice fiscale, France NIR, Ireland PPS, Singapore NRIC, Hong Kong ID, China resident ID, South Korea RRN, UAE Emirates ID | `123-45-6789`, `AB 12 34 56 C`, `123.456.789-09` | `[REDACTED_ID]` |
 | Any value written after an ID label, whatever the country: TIN, tax ID, tax file no, VAT no, passport no, driver's licence, national ID, SWIFT/BIC, routing, BSB, sort code | `Passport No: K1234567` | `[REDACTED_ID]` |
 | Bank account numbers in IBAN form | `DE89 3704 0044 0532 0130 00` | `[REDACTED_ACCOUNT]` |
+| An account or card number written after its label, in any format (a card's last four stays) | `acct# XXXX9921`, `Account Number ACC-4421-0098` | `[REDACTED_ACCOUNT]` |
 | A labelled date of birth | `DOB: 03/14/1996` | `[REDACTED_DOB]` |
 | Phone numbers | `512-555-0147` | `[REDACTED_PHONE]` |
 | Email addresses | `john.doe@gmail.com` | `[REDACTED_VPA_OR_EMAIL]` |
@@ -85,6 +86,16 @@ You can watch what leaves your browser:
 2. Drop a statement.
 3. Look at the request to `/api/audit`. It carries the cleaned lines, not your file.
 
+### CSV files: columns with your details
+
+A CSV can carry your details in whole columns, or in lines above the table. [`src/csv-columns.ts`](src/csv-columns.ts) keeps them out, whatever the layout:
+
+- Columns named for your own details (cardholder, card member, account number, IBAN, sort code, email, phone, address and similar, with or without underscores, like `Cust_Name`) are never kept. A payee column called just `Name` is kept, because it says who you paid.
+- Lines above the table, like `Account Name: Jane Doe` or `Account No: 0011…`, are never kept. The name in them is removed everywhere else too, for example in a self-transfer `UPI/DR/123/JANE DOE/SELF`.
+- In a layout nobody recognises, a column with the same value on every row (a cardholder, an account number) is dropped.
+
+This was added after a reader planted a name and an account number in a test CSV and found them in the network tab. Thank you.
+
 ## Honest limits
 
 - **These are rules, not magic.** They are written to work for statements from anywhere in the world, but statements come in thousands of layouts. A detail written in an unusual way can slip through. If you find one, please open an issue (with made-up data).
@@ -93,7 +104,7 @@ You can watch what leaves your browser:
 
 ## This is the code the site runs
 
-wdmmg.app doesn't keep its own copy. The site includes this repository directly (as a git submodule pinned to one commit on `main`) and runs it unchanged. A check on the site's side fails if it ever points at a commit that isn't public here. So any change to how your details are redacted has to be published here first.
+wdmmg.app doesn't keep its own copy. The site includes this repository directly (as a git submodule pinned to one commit on `main`) and runs it unchanged. A check on the site's side fails if it ever points at a commit that isn't public here. So any change to how your details are redacted has to be published here first. Working out which CSV column is the date or the amount is the site's own code; everything that keeps your details out of a CSV is here.
 
 ## License
 
