@@ -36,3 +36,19 @@ test('the US ACH account holder is hidden in the default mode', () => {
   const { scrubbedLines } = scrubStatementText('09/03/2026 ACH CREDIT ACME INDN:JOHN DOE CO ID:123 500.00', [], { scrub: false });
   assert.ok(!/JOHN DOE/.test(scrubbedLines.join('')));
 });
+
+test('no middle initial or cut-off surname is left beside a hidden name', () => {
+  const text = [
+    'Account Holder: JONATHAN Q TESTPERSON',
+    '10/03/2026 ACME PAYROLL PPD ID: 1234 INDN:JONATHAN Q TE CO ID:9876 3,150.00',
+    '10/05/2026 ZELLE TO JANE SMITH 40.00',
+    '10/06/2026 JONATHAN Q TESTPERSON TRANSFER | 200.00',
+    '10/07/2026 TESCO STORES 12.40',
+  ].join('\n');
+  for (const scrub of [false, true]) {
+    const out = scrubStatementText(text, ['JONATHAN Q TESTPERSON'], { scrub }).scrubbedLines.join('\n');
+    assert.ok(!/JONATHAN|TESTPERSON|\] Q\b|\] TE\b/.test(out), out);
+    assert.match(out, /TESCO STORES 12\.40/, 'shops stay');
+    assert.match(out, /3,150\.00/, 'amounts stay');
+  }
+});
