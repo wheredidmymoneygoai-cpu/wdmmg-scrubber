@@ -282,6 +282,30 @@ function escapeRegex(text: string): string {
 }
 
 /** "Rahul Sharma" -> the full name plus each part ("Rahul", "Sharma"), so either form is removed. */
+/**
+ * What is left beside a hidden name: a middle initial ("[REDACTED_NAME] Q") or the start of a surname the
+ * bank cut short ("JONATHAN Q TE" for JONATHAN Q TESTPERSON). Both still point at the person, so they go
+ * too. Only single letters and cut-off starts of the hidden names themselves are removed.
+ */
+function nameLeftoverTidier(names: string[]): (line: string) => string {
+  const prefixes = new Set<string>();
+  for (const raw of names.slice(0, 30)) {
+    for (const part of raw.trim().split(/\s+/)) {
+      if (part.length < 4 || !/^[\p{L}'-]+$/u.test(part)) continue;
+      for (let n = 2; n < part.length; n++) prefixes.add(escapeRegex(part.slice(0, n)));
+    }
+  }
+  const initials = /\[REDACTED_NAME\]((?:\s+\p{Lu}\.?)+)(?=\s|\||$)/gu;
+  const cut = prefixes.size
+    ? new RegExp(`\\[REDACTED_NAME\\]\\s+(?:${Array.from(prefixes).sort((a, b) => b.length - a.length).join('|')})(?=\\s|\\||$)`, 'gi')
+    : null;
+  return (line: string) => {
+    let out = line.replace(initials, '[REDACTED_NAME]');
+    if (cut) out = out.replace(cut, '[REDACTED_NAME]');
+    return out;
+  };
+}
+
 function expandNames(names: string[]): string[] {
   const out = new Set<string>();
   // Capped so a long list cannot tie up the device or the server (each name is a search over every line).
@@ -326,6 +350,7 @@ export function scrubStatementText(
   const customNameRegexes = expandNames([...userExcludeNames, ...holderNames]).map(
     (name) => new RegExp(`\\b${escapeRegex(name)}\\b`, 'gi')
   );
+  const tidyNames = nameLeftoverTidier([...userExcludeNames, ...holderNames]);
 
   if (!scrub) {
     // Default mode: only the visitor's own name and personal details are hidden. Other people and
@@ -362,6 +387,7 @@ export function scrubStatementText(
           line = line.replace(nameRx, '[REDACTED_NAME]');
         }
       }
+      line = tidyNames(line);
       for (const pattern of NUMBER_PATTERNS) {
         const matches = line.match(pattern.regex);
         if (matches) {
@@ -414,6 +440,7 @@ export function scrubStatementText(
         line = line.replace(nameRx, '[REDACTED_NAME]');
       }
     }
+    line = tidyNames(line);
     // 3) numbers, ids, cards, phones
     for (const pattern of otherPatterns) {
       const matches = line.match(pattern.regex);
